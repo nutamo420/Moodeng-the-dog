@@ -1,0 +1,137 @@
+import pygame,os,random
+from pygame.locals import *
+pygame.init()
+
+def display_score():
+    score_count = (pygame.time.get_ticks() //1000) - start_time
+    score_sur = text_font.render(f'{score_count}', False, "black")
+    score_rec = score_sur.get_rect(topright = (780, 20) )
+    screen.blit(score_sur, score_rec)
+    return score_count
+
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Moodeng the dog")
+icon = pygame.image.load("pop.png").convert_alpha()
+pygame.display.set_icon(icon)
+
+game_active = False
+
+bg = pygame.image.load("sweet.png").convert_alpha()
+bg1 = pygame.transform.scale(bg, (800, 600))
+
+ground = pygame.image.load("Png.png").convert_alpha()
+ground1 = pygame.transform.scale(ground, (800, 150))
+ground_posX = 0
+posX = 50
+posY = 550
+
+player = pygame.image.load("moodeng1.png").convert_alpha()
+player1 = pygame.transform.scale(player, (100, 100))
+player_rec = player1.get_rect(bottomleft=(posX, posY))
+
+move = 15
+move_jump = 10
+jump = False
+i = 0 #scroll bg
+
+text_font = pygame.font.Font("byteoff.otf", 40)
+text_show = text_font.render("Moodeng the doggo", False, "Black")
+text_rec = text_show.get_rect(center = (400, 100))
+
+dino = pygame.image.load("IMG_2245.PNG").convert_alpha()
+dino1 = pygame.transform.scale(dino, (80, 80))
+dino_rec = dino1.get_rect(bottomright=(600, 550))
+
+start_time = 0
+score = 0
+
+text_gameover_font = pygame.font.Font("byteoff.otf", 50)
+game_name = text_gameover_font.render("Moodeng The Dog", False, "white")
+game_name_rec = game_name.get_rect(center = (400, 90))
+text_start = text_gameover_font.render("Press Space to start!", False, "white")
+text_start_rec = text_start.get_rect(center=(400, 520))
+
+while True:
+    pygame.time.delay(30)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit()
+
+    if game_active:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and player_rec.left > 0:
+            player_rec.left -= move
+        if keys[pygame.K_RIGHT] and player_rec.right < 800:
+            player_rec.right += move
+        if jump is False and keys[pygame.K_UP]:
+            jump = True
+        if jump:
+            player_rec.bottom -= move_jump*4 #ความสูงตอนกระโดด
+            move_jump -= 1 #gravityความเร็วตอนโดด
+            if move_jump < -10:
+                jump = False
+                move_jump = 10
+    else:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            game_active = True
+            jump = False
+            move_jump = 10
+            dino_rec.left = 800
+            player_rec = player1.get_rect(bottomleft=(posX, posY))
+            start_time = int(pygame.time.get_ticks()//1000)
+
+    if game_active:
+        screen.fill((0,0,0))
+        screen.blit(bg1, (i, 0))
+        screen.blit(bg1, (800+i, 0))
+        screen.blit(ground1, (ground_posX, 500))
+        screen.blit(ground1, (799+ground_posX, 500))
+        # pygame.draw.rect(screen, "Pink", text_rec)
+        screen.blit(text_show, text_rec)
+        score = display_score()
+
+        if i == -800:
+            screen.blit(bg1, (800+i, 0))
+            i = 0
+        if ground_posX == -800:
+            screen.blit(ground1, (800+ground_posX, 500))
+            ground_posX = 0
+
+        i -= 1
+        ground_posX -= 2
+        dino_rec.x -= 10
+        if dino_rec.right <= 0:
+            dino_rec.left = 800
+
+        screen.blit(dino1, dino_rec)
+        screen.blit(player1, player_rec)
+
+        #collision
+        if dino_rec.colliderect(player_rec):
+            game_active = False
+
+    else:
+        bg_gameover = pygame.image.load("556521.jpg").convert_alpha()
+        bg_gameover1 = pygame.transform.scale(bg_gameover, (800, 600))
+
+        text_gameover = text_gameover_font.render("GAME OVER", False, "white")
+        text_gameover_rec = text_gameover.get_rect(center=(400, 60))
+        text_score = text_gameover_font.render(f'Score: {score}', False, "white")
+        text_score_rec = text_score.get_rect(center=(400, 120))
+        text_restart = text_gameover_font.render("Press Space to restart!", False, "white")
+        text_restart_rec = text_restart.get_rect(center=(400, 520))
+        player_go = pygame.image.load("moodeng_go.png").convert_alpha()
+        player_go1 = pygame.transform.scale(player_go, (300, 300))
+        player_go_rec = player_go1.get_rect(center=(400, 300))
+
+        screen.blit(bg_gameover1, (0, 0))
+        screen.blit(player_go1, player_go_rec)
+        if score == 0:
+            screen.blit(game_name, game_name_rec)
+            screen.blit(text_start, text_start_rec)
+        else:
+            screen.blit(text_score, text_score_rec)
+            screen.blit(text_gameover, text_gameover_rec)
+            screen.blit(text_restart, text_restart_rec)
+    pygame.display.update()
