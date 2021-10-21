@@ -51,6 +51,9 @@ game_name_rec = game_name.get_rect(center = (400, 90))
 text_start = text_gameover_font.render("Press Space to start!", False, "white")
 text_start_rec = text_start.get_rect(center=(400, 520))
 
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 900)
+
 while True:
     pygame.time.delay(30)
     for event in pygame.event.get():
@@ -71,6 +74,10 @@ while True:
             if move_jump < -10:
                 jump = False
                 move_jump = 10
+
+        if event.type == obstacle_timer:
+            print('test')
+            
     else:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
@@ -98,11 +105,11 @@ while True:
             screen.blit(ground1, (800+ground_posX, 500))
             ground_posX = 0
 
-        i -= 1
-        ground_posX -= 2
-        dino_rec.x -= 10
-        if dino_rec.right <= 0:
-            dino_rec.left = 800
+        # i -= 1
+        # ground_posX -= 2
+        # dino_rec.x -= 10
+        # if dino_rec.right <= 0:
+        #     dino_rec.left = 800
 
         screen.blit(dino1, dino_rec)
         screen.blit(player1, player_rec)
