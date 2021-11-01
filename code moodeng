@@ -31,6 +31,13 @@ def collision(player, obstacle):
                 return False
     return True
 
+def player_animation():
+    global player_surf, player_index
+    player_index += 0.1
+    if player_index >= len(player_move):
+        player_index = 0
+    player_surf = player_move[int(player_index)]
+
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Moodeng the dog")
 icon = pygame.image.load("pop.png").convert_alpha()
@@ -47,8 +54,13 @@ ground_posX = 0
 posX = 50
 posY = 550
 
-player = pygame.image.load("moodeng1.png").convert_alpha()
-player1 = pygame.transform.scale(player, (100, 100))
+player1 = pygame.image.load("p1.png").convert_alpha()
+player2 = pygame.image.load("p2.png").convert_alpha()
+player11 = pygame.transform.scale(player1, (80, 100))
+player22 = pygame.transform.scale(player2, (80, 100))
+player_move = [player11, player22]
+player_index = 0
+player_surf = player_move[player_index]
 player_rec = player1.get_rect(bottomleft=(posX, posY))
 
 move = 15
@@ -61,11 +73,11 @@ text_show = text_font.render("Moodeng the doggo", False, "Black")
 text_rec = text_show.get_rect(center = (400, 100))
 
 
-dino = pygame.image.load("IMG_2245.PNG").convert_alpha()
-dino1 = pygame.transform.scale(dino, (80, 80))
+dino = pygame.image.load("bone1.PNG").convert_alpha()
+dino1 = pygame.transform.scale(dino, (65, 80))
 
 fly = pygame.image.load("pop.PNG").convert_alpha()
-fly1 = pygame.transform.scale(fly, (80, 80))
+fly1 = pygame.transform.scale(fly, (40, 40))
 
 obstacle_rec_list = []
 
@@ -135,11 +147,7 @@ while True:
 
         i -= 1
         ground_posX -= 2
-        # dino_rec.x -= 10
-        # if dino_rec.right <= 0:
-        #     dino_rec.left = 800
-
-        # screen.blit(dino1, dino_rec)
+        player_animation()
         screen.blit(player1, player_rec)
 
         #obstacle movement
