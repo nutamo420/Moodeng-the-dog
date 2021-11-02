@@ -16,9 +16,9 @@ def obstacle_movement(obstacle_list):
         for obstacle_rect in obstacle_list:
             obstacle_rect.x -= 5
             if obstacle_rect.bottom == 550:
-                screen.blit(dino1, obstacle_rect)
+                screen.blit(bone_surf, obstacle_rect)
             else:
-                screen.blit(fly1, obstacle_rect)
+                screen.blit(fly_surf, obstacle_rect)
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
         return obstacle_list
     else:
@@ -33,10 +33,14 @@ def collision(player, obstacle):
 
 def player_animation():
     global player_surf, player_index
-    player_index += 0.1
-    if player_index >= len(player_move):
-        player_index = 0
-    player_surf = player_move[int(player_index)]
+
+    if player_rec.bottom < 550:
+        player_surf = playerjj
+    else:
+        player_index += 0.1
+        if player_index >= len(player_move):
+            player_index = 0
+        player_surf = player_move[int(player_index)]
 
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Moodeng the dog")
@@ -54,14 +58,16 @@ ground_posX = 0
 posX = 50
 posY = 550
 
-player1 = pygame.image.load("p1.png").convert_alpha()
-player2 = pygame.image.load("p2.png").convert_alpha()
-player11 = pygame.transform.scale(player1, (80, 100))
-player22 = pygame.transform.scale(player2, (80, 100))
+player1 = pygame.image.load("moodeng1.png").convert_alpha()
+player2 = pygame.image.load("moodeng2.png").convert_alpha()
+player11 = pygame.transform.scale(player1, (100, 100))
+player22 = pygame.transform.scale(player2, (100, 100))
 player_move = [player11, player22]
 player_index = 0
+playerj = pygame.image.load("moodeng_go.png").convert_alpha()
+playerjj = pygame.transform.scale(playerj, (100, 100))
 player_surf = player_move[player_index]
-player_rec = player1.get_rect(bottomleft=(posX, posY))
+player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
 move = 15
 move_jump = 10
@@ -73,11 +79,21 @@ text_show = text_font.render("Moodeng the doggo", False, "Black")
 text_rec = text_show.get_rect(center = (400, 100))
 
 
-dino = pygame.image.load("bone1.PNG").convert_alpha()
-dino1 = pygame.transform.scale(dino, (65, 80))
+bone1 = pygame.image.load("bone1.PNG").convert_alpha()
+bone2 = pygame.image.load("bone2.PNG").convert_alpha()
+bone11 = pygame.transform.scale(bone1, (65, 80))
+bone22 = pygame.transform.scale(bone2, (65, 80))
+bone_frame = [bone11, bone22]
+bone_index = 0
+bone_surf = bone_frame[bone_index]
 
-fly = pygame.image.load("pop.PNG").convert_alpha()
-fly1 = pygame.transform.scale(fly, (40, 40))
+fly1 = pygame.image.load("h1.PNG").convert_alpha()
+fly2 = pygame.image.load("h2.PNG").convert_alpha()
+fly11 = pygame.transform.scale(fly1, (40, 40))
+fly22 = pygame.transform.scale(fly2, (40, 40))
+fly_frame = [fly11, fly22]
+fly_index = 0
+fly_surf = fly_frame[fly_index]
 
 obstacle_rec_list = []
 
@@ -90,19 +106,35 @@ game_name_rec = game_name.get_rect(center = (400, 90))
 text_start = text_gameover_font.render("Press Space to start!", False, "white")
 text_start_rec = text_start.get_rect(center=(400, 520))
 
-obstacle_timer = pygame.USEREVENT + 1
+obstacle_timer = pygame.USEREVENT + 5
 pygame.time.set_timer(obstacle_timer, 2000)
+
+bone_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(bone_timer, 500)
+
+fly_timer = pygame.USEREVENT + 3
+pygame.time.set_timer(fly_timer, 700)
 
 while True:
     pygame.time.delay(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
-        if event.type == obstacle_timer and game_active:
-            if randint(0,2):
-                obstacle_rec_list.append(dino1.get_rect(bottomright=(randint(900, 1200), 550)))
-            else:
-                obstacle_rec_list.append(fly1.get_rect(bottomright=(randint(900, 1200), 430)))
+        if game_active:
+            if event.type == obstacle_timer:
+                if randint(0,2):
+                    obstacle_rec_list.append(bone_surf.get_rect(bottomright=(randint(900, 1200), 550)))
+                else:
+                    obstacle_rec_list.append(fly_surf.get_rect(bottomright=(randint(900, 1200), 430)))
+            if event.type == bone_timer:
+                if bone_index == 0: bone_index = 1
+                else: bone_index = 0
+                bone_surf = bone_frame[bone_index]
+            if event.type == fly_timer:
+                if fly_index == 0: fly_index = 1
+                else: fly_index = 0
+                fly_surf = fly_frame[fly_index]
+
 
     if game_active:
         keys = pygame.key.get_pressed()
@@ -124,8 +156,7 @@ while True:
             game_active = True
             jump = False
             move_jump = 10
-            # dino_rec.left = 800
-            player_rec = player1.get_rect(bottomleft=(posX, posY))
+            player_rec = player_surf.get_rect(bottomleft=(posX, posY))
             start_time = int(pygame.time.get_ticks()//1000)
 
     if game_active:
@@ -148,7 +179,7 @@ while True:
         i -= 1
         ground_posX -= 2
         player_animation()
-        screen.blit(player1, player_rec)
+        screen.blit(player_surf, player_rec)
 
         #obstacle movement
         obstacle_rec_list = obstacle_movement(obstacle_rec_list)
@@ -173,7 +204,7 @@ while True:
         screen.blit(bg_gameover1, (0, 0))
         screen.blit(player_go1, player_go_rec)
         obstacle_rec_list.clear()
-        player_rec.bottomleft = (80, 300)
+        player_rec.bottomleft = (50, 550)
 
         if score == 0:
             screen.blit(game_name, game_name_rec)
