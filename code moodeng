@@ -25,12 +25,10 @@ class Player(pygame.sprite.Sprite):
         self.jump_sound.set_volume(3)
 
     def player_input(self):
-        global heart
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and self.rect.bottom >= 550:
             self.gravity = -30
             self.jump_sound.play()
-            heart += 1
         if keys[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.left -= 15
         if keys[pygame.K_RIGHT] and self.rect.right < 800:
@@ -57,22 +55,14 @@ class Player(pygame.sprite.Sprite):
         self.animation()
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, type):
+    def __init__(self):
         super().__init__()
-        if type == 'fly':
-            fly1 = pygame.image.load("h1.PNG").convert_alpha()
-            fly2 = pygame.image.load("h2.PNG").convert_alpha()
-            fly11 = pygame.transform.scale(fly1, (40, 40))
-            fly22 = pygame.transform.scale(fly2, (40, 40))
-            self.frame = [fly11, fly22]
-            posY = 430
-        else:
-            bone1 = pygame.image.load("bone1.PNG").convert_alpha()
-            bone2 = pygame.image.load("bone2.PNG").convert_alpha()
-            bone11 = pygame.transform.scale(bone1, (65, 80))
-            bone22 = pygame.transform.scale(bone2, (65, 80))
-            self.frame = [bone11, bone22]
-            posY = 550
+        bone1 = pygame.image.load("bone1.PNG").convert_alpha()
+        bone2 = pygame.image.load("bone2.PNG").convert_alpha()
+        bone11 = pygame.transform.scale(bone1, (65, 80))
+        bone22 = pygame.transform.scale(bone2, (65, 80))
+        self.frame = [bone11, bone22]
+        posY = 550
         self.animation_index = 0
         self.image = self.frame[self.animation_index]
         self.rect = self.image.get_rect(bottomright=(randint(900, 1100), posY))
@@ -89,6 +79,34 @@ class Obstacle(pygame.sprite.Sprite):
         if self.rect.x <= -100:
             self.kill()
 
+class heart(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        fly1 = pygame.image.load("h1.PNG").convert_alpha()
+        fly2 = pygame.image.load("h2.PNG").convert_alpha()
+        fly11 = pygame.transform.scale(fly1, (40, 40))
+        fly22 = pygame.transform.scale(fly2, (40, 40))
+        self.frame = [fly11, fly22]
+        posY = 430
+        self.animation_index = 0
+        self.image = self.frame[self.animation_index]
+        self.rect = self.image.get_rect(bottomright=(randint(900, 1100), posY))
+    def animation_state(self):
+        self.animation_index += 0.1
+        if self.animation_index >= len(self.frame):
+            self.animation_index = 0
+        self.image = self.frame[int(self.animation_index)]
+    def update(self):
+        self.animation_state()
+        self.rect.x -= move
+        self.destroy()
+    def destroy(self):
+        global hearto
+        if pygame.sprite.spritecollide(player.sprite, heart_group, False):
+            hearto += 1
+            self.kill()
+        if self.rect.x <= -100:
+            self.kill()
 def display_score():
     global move
     score_count = (pygame.time.get_ticks() //1000) - start_time
@@ -100,17 +118,17 @@ def display_score():
     return score_count
 
 def display_heart():
-    global heart
-    heart_count = heart
+    global hearto
+    heart_count = hearto
     heart_sur = text_fontsmol.render(f' = {heart_count}', False, "black")
     heart_rec = heart_sur.get_rect(topright = (500, 30))
     screen.blit(heart_sur, heart_rec)
 
 def collision_sprite():
+    global hearto
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
         obstacle_group.empty()
         return False
-
     else: return True
 
 def player_animation():
@@ -154,6 +172,7 @@ player_surf = player_move[player_index]
 player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
 obstacle_group = pygame.sprite.Group()
+heart_group = pygame.sprite.Group()
 
 move = 7
 i = 0 #scroll bg
@@ -177,7 +196,7 @@ fly_index = 0
 fly_surf = fly_frame[fly_index]
 
 obstacle_rec_list = []
-heart = 0
+hearto = 0
 start_time = 0
 score = 0
 bg_music = pygame.mixer.Sound('Gardening.mp3')
@@ -230,7 +249,11 @@ while True:
             quit()
         if game_active:
             if event.type == obstacle_timer:
-                obstacle_group.add(Obstacle(choice(['fly','bone','bone','bone','bone','bone','bone'])))
+                thing = choice(['fly','bone'])
+                if thing == 'bone':
+                    obstacle_group.add(Obstacle())
+                else:
+                    heart_group.add(heart())
             if event.type == bone_timer:
                 if bone_index == 0: bone_index = 1
                 else: bone_index = 0
@@ -278,6 +301,8 @@ while True:
         player.update()
         obstacle_group.draw(screen)
         obstacle_group.update()
+        heart_group.draw(screen)
+        heart_group.update()
         game_active = collision_sprite()
 
     else:
