@@ -25,10 +25,12 @@ class Player(pygame.sprite.Sprite):
         self.jump_sound.set_volume(3)
 
     def player_input(self):
+        global heart
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and self.rect.bottom >= 550:
             self.gravity = -30
             self.jump_sound.play()
+            heart += 1
         if keys[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.left -= 15
         if keys[pygame.K_RIGHT] and self.rect.right < 800:
@@ -90,17 +92,25 @@ class Obstacle(pygame.sprite.Sprite):
 def display_score():
     global move
     score_count = (pygame.time.get_ticks() //1000) - start_time
-    score_sur = text_font.render(f'{score_count}', False, "black")
-    score_rec = score_sur.get_rect(topright = (780, 20) )
+    score_sur = text_fontsmol.render(f'score : {score_count}', False, "black")
+    score_rec = score_sur.get_rect(topright = (780, 30) )
     screen.blit(score_sur, score_rec)
     if score_count % 2 == 0 and score_count != 0:
         move += 0.02
     return score_count
 
+def display_heart():
+    global heart
+    heart_count = heart
+    heart_sur = text_fontsmol.render(f' = {heart_count}', False, "black")
+    heart_rec = heart_sur.get_rect(topright = (500, 30))
+    screen.blit(heart_sur, heart_rec)
+
 def collision_sprite():
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
         obstacle_group.empty()
         return False
+
     else: return True
 
 def player_animation():
@@ -146,14 +156,9 @@ player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 obstacle_group = pygame.sprite.Group()
 
 move = 7
-move_jump = 10
-jump = False
 i = 0 #scroll bg
 
 text_font = pygame.font.Font("byteoff.otf", 40)
-text_show = text_font.render("Moodeng the doggo", False, "Black")
-text_rec = text_show.get_rect(center = (400, 100))
-
 
 bone1 = pygame.image.load("bone1.PNG").convert_alpha()
 bone2 = pygame.image.load("bone2.PNG").convert_alpha()
@@ -172,18 +177,42 @@ fly_index = 0
 fly_surf = fly_frame[fly_index]
 
 obstacle_rec_list = []
-
+heart = 0
 start_time = 0
 score = 0
 bg_music = pygame.mixer.Sound('Gardening.mp3')
-bg_music.set_volume(0.1)
+bg_music.set_volume(2)
 # bg_music.play(loops=-1)
 
-text_gameover_font = pygame.font.Font("byteoff.otf", 50)
-game_name = text_gameover_font.render("Moodeng The Dog", False, "white")
+text_font = pygame.font.Font("byteoff.otf", 50)
+text_fontsmol = pygame.font.Font("byteoff.otf", 40) 
+game_name = text_font.render("Moodeng The Dog", False, "white")
 game_name_rec = game_name.get_rect(center = (400, 90))
-text_start = text_gameover_font.render("Press Space to start!", False, "white")
-text_start_rec = text_start.get_rect(center=(400, 520))
+text_start1 = text_fontsmol.render("Hold Tab to see How to Play", False, "white")
+text_start2 = text_fontsmol.render("or Press Space to start!", False, "white")
+text_start_rec1 = text_start1.get_rect(center=(400, 470))
+text_start_rec2 = text_start2.get_rect(center=(400, 540))
+
+bg_gameover = pygame.image.load("556521.jpg").convert_alpha()
+bg_gameover1 = pygame.transform.scale(bg_gameover, (800, 600))
+text_gameover = text_font.render("GAME OVER", False, "white")
+text_gameover_rec = text_gameover.get_rect(center=(400, 60))
+text_score = text_font.render(f'Score: {score}', False, "white")
+text_score_rec = text_score.get_rect(center=(400, 120))
+text_restart = text_font.render("Press Space to restart!", False, "white")
+text_restart_rec = text_restart.get_rect(center=(400, 520))
+
+player_go = pygame.image.load("moodeng_go.png").convert_alpha()
+player_go1 = pygame.transform.scale(player_go, (300, 300))
+player_go_rec = player_go1.get_rect(center=(400, 300))
+player_start_rec = player_go1.get_rect(center=(400, 280))
+
+text_howto = text_font.render('How to play!', False, "white")
+text_howto_rec = text_howto.get_rect(center=(400, 90))
+text_howto1 = text_fontsmol.render('Use arrow keys to control Moodeng', False, "white")
+text_howto_rec1 = text_howto1.get_rect(center=(400, 200))
+text_howto2 = text_fontsmol.render('and keep away from the skeleton!', False, "white")
+text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
 
 obstacle_timer = pygame.USEREVENT + 5
 pygame.time.set_timer(obstacle_timer, 2000)
@@ -201,7 +230,7 @@ while True:
             quit()
         if game_active:
             if event.type == obstacle_timer:
-                obstacle_group.add(Obstacle(choice(['fly','bone','bone','bone'])))
+                obstacle_group.add(Obstacle(choice(['fly','bone','bone','bone','bone','bone','bone'])))
             if event.type == bone_timer:
                 if bone_index == 0: bone_index = 1
                 else: bone_index = 0
@@ -223,10 +252,7 @@ while True:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             game_active = True
-            jump = False
             move = 7
-            move_jump = 10
-            image = player_surf.get_rect(bottomleft=(posX, posY))
             start_time = int(pygame.time.get_ticks()//1000)
 
     if game_active:
@@ -235,8 +261,8 @@ while True:
         screen.blit(bg1, (800+i, 0))
         screen.blit(ground1, (ground_posX, 500))
         screen.blit(ground1, (799+ground_posX, 500))
-        screen.blit(text_show, text_rec)
         score = display_score()
+        display_heart()
 
         if i == -800:
             screen.blit(bg1, (800+i, 0))
@@ -255,28 +281,25 @@ while True:
         game_active = collision_sprite()
 
     else:
-        bg_gameover = pygame.image.load("556521.jpg").convert_alpha()
-        bg_gameover1 = pygame.transform.scale(bg_gameover, (800, 600))
-
-        text_gameover = text_gameover_font.render("GAME OVER", False, "white")
-        text_gameover_rec = text_gameover.get_rect(center=(400, 60))
-        text_score = text_gameover_font.render(f'Score: {score}', False, "white")
-        text_score_rec = text_score.get_rect(center=(400, 120))
-        text_restart = text_gameover_font.render("Press Space to restart!", False, "white")
-        text_restart_rec = text_restart.get_rect(center=(400, 520))
-        player_go = pygame.image.load("moodeng_go.png").convert_alpha()
-        player_go1 = pygame.transform.scale(player_go, (300, 300))
-        player_go_rec = player_go1.get_rect(center=(400, 300))
-
         screen.blit(bg_gameover1, (0, 0))
-        screen.blit(player_go1, player_go_rec)
         obstacle_rec_list.clear()
+        text_score = text_font.render(f'Score: {score}', False, "white")
+        text_score_rec = text_score.get_rect(center=(400, 120))
 
         if score == 0:
-            screen.blit(game_name, game_name_rec)
-            screen.blit(text_start, text_start_rec)
+            if keys[pygame.K_TAB]:
+                screen.blit(text_howto, text_howto_rec)
+                screen.blit(text_howto1, text_howto_rec1)
+                screen.blit(text_howto2, text_howto_rec2)
+            else:
+                screen.blit(player_go1, player_start_rec)
+                screen.blit(game_name, game_name_rec)
+                screen.blit(text_start1, text_start_rec1)
+                screen.blit(text_start2, text_start_rec2)
         else:
+            screen.blit(player_go1, player_go_rec)
             screen.blit(text_score, text_score_rec)
             screen.blit(text_gameover, text_gameover_rec)
             screen.blit(text_restart, text_restart_rec)
+    
     pygame.display.update()
