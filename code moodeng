@@ -119,7 +119,7 @@ def display_score():
     screen.blit(score_sur, score_rec)
     if score_count % 2 == 0 and score_count != 0 and supermoodeng == False:
         move += 0.015
-        # speed += 1
+        #speed += 0.1
     return score_count
 
 def display_heart():
@@ -128,7 +128,7 @@ def display_heart():
     heart_sur = text_fontsmol.render(f'= {heartshow}', False, "black")
     heart_rec = heart_sur.get_rect(topright = (400, 30))
     if heartshow == 5: supermoodeng = True
-    if supermoodeng: hearto -= 0.005
+    if supermoodeng: hearto -= 0.004
     if heartshow == 0: supermoodeng = False
     screen.blit(heart_sur, heart_rec)
 
@@ -269,10 +269,11 @@ while True:
         display_heart()
         screen.blit(luv1, luv_rect)
 
-        if scroll == -800:
+        
+        if scroll <= -800:
             screen.blit(bg1, (800+scroll, 0))
             scroll = 0
-        if ground_posX == -800:
+        if ground_posX <= -800:
             screen.blit(ground1, (800+ground_posX, 500))
             ground_posX = 0
 
