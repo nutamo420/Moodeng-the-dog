@@ -2,7 +2,6 @@ import pygame
 from pygame import image
 from pygame.locals import *
 from random import randint, choice
-
 from pygame.sprite import spritecollide
 
 pygame.init()
@@ -19,6 +18,9 @@ class Player(pygame.sprite.Sprite):
         self.player_index = 0
         playerj = pygame.image.load("moodeng_go.png").convert_alpha()
         self.playerjj = pygame.transform.scale(playerj, (100, 100))
+
+        fire = pygame.image.load("IMG_2247.png").convert_alpha()
+        self.fire1 = pygame.transform.scale(player1, (100, 100))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(bottomleft=(posX, posY))
@@ -44,13 +46,17 @@ class Player(pygame.sprite.Sprite):
                 self.rect.bottom = 550
 
     def animation(self):
-        if self.rect.bottom < 550:
-            self.image = self.playerjj
+        global supermoodeng
+        if supermoodeng == True:
+            self.image = self.fire1
         else:
-            self.player_index += 0.1
-            if self.player_index >= len(self.player_walk):
-                self.player_index = 0
-            self.image = self.player_walk[int(player_index)]
+            if self.rect.bottom < 550:
+                self.image = self.playerjj
+            else:
+                self.player_index += 0.1
+                if self.player_index >= len(self.player_walk):
+                    self.player_index = 0
+                self.image = self.player_walk[int(player_index)]
 
     def update(self):
         self.player_input()
@@ -117,9 +123,6 @@ def display_score():
     score_sur = text_fontsmol.render(f'score : {score_count}', False, "black")
     score_rec = score_sur.get_rect(topright = (780, 30) )
     screen.blit(score_sur, score_rec)
-    if score_count % 2 == 0 and score_count != 0 and supermoodeng == False:
-        move += 0.015
-        speed += 0.015
     return score_count
 
 def display_heart():
@@ -229,7 +232,7 @@ text_howto = text_font.render('How to play!', False, "white")
 text_howto_rec = text_howto.get_rect(center=(400, 90))
 text_howto1 = text_fontsmol.render('Use arrow keys to control Moodeng', False, "white")
 text_howto_rec1 = text_howto1.get_rect(center=(400, 200))
-text_howto2 = text_fontsmol.render('and keep away from the skeleton!', False, "white")
+text_howto2 = text_fontsmol.render('and keep away from the skeletons!', False, "white")
 text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
 text_howto3 = text_fontsmol.render('Also collect 5 hearts to active', False, "white")
 text_howto_rec3 = text_howto3.get_rect(center=(400, 380))
@@ -262,20 +265,27 @@ while True:
     if game_active:
         screen.fill((0,0,0))
         screen.blit(bg1, (scroll, 0))
-        screen.blit(bg1, (800+scroll, 0))
         screen.blit(ground1, (ground_posX, 500))
-        screen.blit(ground1, (799+ground_posX, 500))
+        
+
+        rel_x = scroll % bg1.get_rect().width
+        screen.blit(bg1, (rel_x - bg1.get_rect().width, 0))
+        if rel_x < 800:
+            screen.blit(bg1, (rel_x, 0))
+
+        rel_x2 = ground_posX % ground1.get_rect().width
+        screen.blit(ground1, (rel_x2 - ground1.get_rect().width, 500))
+        if rel_x2 < 800:
+            screen.blit(ground1, (rel_x2, 500))
+        
+
+        if supermoodeng == False:
+            move += 0.01
+            speed += 0.01
+
         score = display_score()
         display_heart()
         screen.blit(luv1, luv_rect)
-
-        # print(scroll,ground_posX)
-        if scroll <= -800:
-            screen.blit(bg1, (800+scroll, 0))
-            scroll = 0
-        if ground_posX <= -800:
-            screen.blit(ground1, (800+ground_posX, 500))
-            ground_posX = 0
 
         scroll -= speed+1
         ground_posX -= speed+2
