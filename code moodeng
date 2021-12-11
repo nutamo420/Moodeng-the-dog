@@ -11,15 +11,15 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         player1 = pygame.image.load("moodeng1.png").convert_alpha()
         player2 = pygame.image.load("moodeng2.png").convert_alpha()
-        player11 = pygame.transform.scale(player1, (100, 100))
-        player22 = pygame.transform.scale(player2, (100, 100))
+        player11 = pygame.transform.scale(player1, (105, 105))
+        player22 = pygame.transform.scale(player2, (105, 105))
         self.player_walk = [player11, player22]
         self.player_index = 0
         playerj = pygame.image.load("moodeng_go.png").convert_alpha()
-        self.playerjj = pygame.transform.scale(playerj, (100, 100))
+        self.playerjj = pygame.transform.scale(playerj, (105, 105))
 
         fire = pygame.image.load("IMG_2247.png").convert_alpha()
-        self.fire1 = pygame.transform.scale(player1, (100, 100))
+        self.fire1 = pygame.transform.scale(player1, (105, 105))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(bottomleft=(posX, posY))
@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
 
     def player_input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP] and self.rect.bottom >= 550:
+        if keys[pygame.K_UP] and self.rect.bottom >= posY:
             self.gravity = -30
             self.jump_sound.play()
         if keys[pygame.K_LEFT] and self.rect.left > 0:
@@ -41,15 +41,15 @@ class Player(pygame.sprite.Sprite):
     def apply_gravity(self):
             self.gravity += 2.5
             self.rect.bottom += self.gravity
-            if self.rect.bottom >= 550:
-                self.rect.bottom = 550
+            if self.rect.bottom >= posY:
+                self.rect.bottom = posY
 
     def animation(self):
         global supermoodeng
         if supermoodeng == True:
             self.image = self.fire1
         else:
-            if self.rect.bottom < 550:
+            if self.rect.bottom < posY:
                 self.image = self.playerjj
             else:
                 self.player_index += 0.1
@@ -61,19 +61,24 @@ class Player(pygame.sprite.Sprite):
         self.player_input()
         self.apply_gravity()
         self.animation()
+        self.destroy()
+
+    def destroy(self):
+        if game_active == False:
+            self.kill()
 
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         bone1 = pygame.image.load("bone1.PNG").convert_alpha()
         bone2 = pygame.image.load("bone2.PNG").convert_alpha()
-        bone11 = pygame.transform.scale(bone1, (65, 80))
-        bone22 = pygame.transform.scale(bone2, (65, 80))
+        bone11 = pygame.transform.scale(bone1, (70, 85))
+        bone22 = pygame.transform.scale(bone2, (70, 85))
         self.frame = [bone11, bone22]
         posY = 550
         self.animation_index = 0
         self.image = self.frame[self.animation_index]
-        self.rect = self.image.get_rect(bottomright=(randint(900, 1100), posY))
+        self.rect = self.image.get_rect(bottomright=(randint(900, 1100), 540))
     def animation_state(self):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frame):
@@ -92,13 +97,13 @@ class heart(pygame.sprite.Sprite):
         super().__init__()
         fly1 = pygame.image.load("h1.PNG").convert_alpha()
         fly2 = pygame.image.load("h2.PNG").convert_alpha()
-        fly11 = pygame.transform.scale(fly1, (40, 40))
-        fly22 = pygame.transform.scale(fly2, (40, 40))
+        fly11 = pygame.transform.scale(fly1, (45, 45))
+        fly22 = pygame.transform.scale(fly2, (45, 45))
         self.frame = [fly11, fly22]
         posY = 430
         self.animation_index = 0
         self.image = self.frame[self.animation_index]
-        self.rect = self.image.get_rect(bottomright=(randint(900, 1100), posY))
+        self.rect = self.image.get_rect(bottomright=(randint(900, 1100), 410))
     def animation_state(self):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frame):
@@ -119,7 +124,7 @@ class heart(pygame.sprite.Sprite):
 def display_score():
     global move, supermoodeng, speed
     score_count = (pygame.time.get_ticks() //1000) - start_time
-    score_sur = text_fontsmol.render(f'score : {score_count}', False, "black")
+    score_sur = text_fontsmol.render(f'score : {score_count}', False, "white")
     score_rec = score_sur.get_rect(topright = (780, 30) )
     screen.blit(score_sur, score_rec)
     return score_count
@@ -127,7 +132,7 @@ def display_score():
 def display_heart():
     global hearto, supermoodeng
     heartshow = int(hearto // 1)
-    heart_sur = text_fontsmol.render(f'= {heartshow}', False, "black")
+    heart_sur = text_fontsmol.render(f'= {heartshow}', False, "white")
     heart_rec = heart_sur.get_rect(topright = (400, 30))
     if heartshow == 5: supermoodeng = True
     if supermoodeng: hearto -= 0.004
@@ -138,8 +143,6 @@ def collision_sprite():
     global supermoodeng, posX, posY
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False) and supermoodeng == False:
         obstacle_group.empty()
-        posX = 80
-        posY = 550
         return False
     else:
         return True
@@ -147,7 +150,7 @@ def collision_sprite():
 def player_animation():
     global player_surf, player_index
 
-    if player_rec.bottom < 550:
+    if player_rec.bottom < posY:
         player_surf = playerjj
     else:
         player_index += 0.1
@@ -162,25 +165,22 @@ pygame.display.set_icon(icon)
 
 game_active = False
 
-bg = pygame.image.load("sweet.png").convert_alpha()
-bg1 = pygame.transform.scale(bg, (800, 600))
+bg = pygame.image.load("aac.jpg").convert_alpha()
+bg1 = pygame.transform.scale(bg, (1280, 720))
 
-ground = pygame.image.load("Png.png").convert_alpha()
-ground1 = pygame.transform.scale(ground, (800, 150))
-ground_posX = 0
 posX = 80
-posY = 550
+posY = 540
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 player1 = pygame.image.load("moodeng1.png").convert_alpha()
 player2 = pygame.image.load("moodeng2.png").convert_alpha()
-player11 = pygame.transform.scale(player1, (100, 100))
-player22 = pygame.transform.scale(player2, (100, 100))
+player11 = pygame.transform.scale(player1, (105, 105))
+player22 = pygame.transform.scale(player2, (105, 105))
 player_move = [player11, player22]
 player_index = 0
 playerj = pygame.image.load("moodeng_go.png").convert_alpha()
-playerjj = pygame.transform.scale(playerj, (100, 100))
+playerjj = pygame.transform.scale(playerj, (105, 105))
 player_surf = player_move[player_index]
 player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
@@ -194,16 +194,16 @@ speed = 0
 text_font = pygame.font.Font("byteoff.otf", 40)
 
 luv = pygame.image.load("h1.PNG").convert_alpha()
-luv1 = pygame.transform.scale(luv, (40, 40))
-luv_rect = luv1.get_rect(topright = (330, 30))
+luv1 = pygame.transform.scale(luv, (45, 45))
+luv_rect = luv1.get_rect(topright = (330, 27))
 hearto = 0
 supermoodeng = False
 
 # obstacle_rec_list = []
 start_time = 0
 score = 0
-bg_music = pygame.mixer.Sound('Gardening.mp3')
-bg_music.set_volume(0.5)
+bg_music = pygame.mixer.Sound('Hw song.mp3')
+bg_music.set_volume(1)
 bg_music.play(loops=-1)
 
 text_font = pygame.font.Font("byteoff.otf", 50)
@@ -266,17 +266,11 @@ while True:
     if game_active:
         screen.fill((0,0,0))
         screen.blit(bg1, (scroll, 0))
-        screen.blit(ground1, (ground_posX, 500))
 
         rel_x = scroll % bg1.get_rect().width
         screen.blit(bg1, (rel_x - bg1.get_rect().width, 0))
         if rel_x < 800:
             screen.blit(bg1, (rel_x, 0))
-
-        rel_x2 = ground_posX % ground1.get_rect().width
-        screen.blit(ground1, (rel_x2 - ground1.get_rect().width, 500))
-        if rel_x2 < 800:
-            screen.blit(ground1, (rel_x2, 500))
 
         if supermoodeng == False:
             move += 0.01
@@ -287,7 +281,6 @@ while True:
         screen.blit(luv1, luv_rect)
 
         scroll -= speed+1
-        ground_posX -= speed+2
         player_animation()
         player.draw(screen)
         player.update()
