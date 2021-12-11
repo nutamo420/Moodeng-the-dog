@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.playerjj = pygame.transform.scale(playerj, (105, 105))
 
         fire = pygame.image.load("IMG_2247.png").convert_alpha()
-        self.fire1 = pygame.transform.scale(player1, (105, 105))
+        self.fire1 = pygame.transform.scale(fire, (105, 105))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(bottomleft=(posX, posY))
@@ -68,17 +68,26 @@ class Player(pygame.sprite.Sprite):
             self.kill()
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, thing):
         super().__init__()
-        bone1 = pygame.image.load("bone1.PNG").convert_alpha()
-        bone2 = pygame.image.load("bone2.PNG").convert_alpha()
-        bone11 = pygame.transform.scale(bone1, (70, 85))
-        bone22 = pygame.transform.scale(bone2, (70, 85))
-        self.frame = [bone11, bone22]
-        posY = 550
+
+        if thing == 'bone':
+            bone1 = pygame.image.load("bone1.PNG").convert_alpha()
+            bone2 = pygame.image.load("bone2.PNG").convert_alpha()
+            bone11 = pygame.transform.scale(bone1, (70, 85))
+            bone22 = pygame.transform.scale(bone2, (70, 85))
+            self.frame = [bone11, bone22]
+        else:
+            ghost1 = pygame.image.load("pp1.PNG").convert_alpha()
+            ghost2 = pygame.image.load("pp2.PNG").convert_alpha()
+            ghost11 = pygame.transform.scale(ghost1, (80, 95))
+            ghost22 = pygame.transform.scale(ghost2, (80, 95))
+            self.frame = [ghost11, ghost22]
+
         self.animation_index = 0
         self.image = self.frame[self.animation_index]
         self.rect = self.image.get_rect(bottomright=(randint(900, 1100), 540))
+
     def animation_state(self):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frame):
@@ -149,14 +158,16 @@ def collision_sprite():
 
 def player_animation():
     global player_surf, player_index
-
-    if player_rec.bottom < posY:
-        player_surf = playerjj
+    if supermoodeng == True:
+        player_surf = fire1
     else:
-        player_index += 0.1
-        if player_index >= len(player_move):
-            player_index = 0
-        player_surf = player_move[int(player_index)]
+        if player_rec.bottom < posY:
+            player_surf = playerjj
+        else:
+            player_index += 0.1
+            if player_index >= len(player_move):
+                player_index = 0
+            player_surf = player_move[int(player_index)]
 
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Moodeng the dog")
@@ -184,6 +195,9 @@ playerjj = pygame.transform.scale(playerj, (105, 105))
 player_surf = player_move[player_index]
 player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
+fire = pygame.image.load("IMG_2247.png").convert_alpha()
+fire1 = pygame.transform.scale(fire, (105, 105))
+
 obstacle_group = pygame.sprite.Group()
 heart_group = pygame.sprite.Group()
 
@@ -207,7 +221,8 @@ bg_music.set_volume(1)
 bg_music.play(loops=-1)
 
 text_font = pygame.font.Font("byteoff.otf", 50)
-text_fontsmol = pygame.font.Font("byteoff.otf", 40) 
+text_fontsmol = pygame.font.Font("byteoff.otf", 40)
+text_fontsmol2 = pygame.font.Font("byteoff.otf", 30) 
 game_name = text_font.render("Moodeng The Dog", False, "white")
 game_name_rec = game_name.get_rect(center = (400, 90))
 text_start1 = text_fontsmol.render("Hold Tab to see How to Play", False, "white")
@@ -231,13 +246,13 @@ player_start_rec = player_go1.get_rect(center=(400, 280))
 
 text_howto = text_font.render('How to play!', False, "white")
 text_howto_rec = text_howto.get_rect(center=(400, 90))
-text_howto1 = text_fontsmol.render('Use arrow keys to control Moodeng', False, "white")
+text_howto1 = text_fontsmol2.render('Use arrow keys to control Moodeng', False, "white")
 text_howto_rec1 = text_howto1.get_rect(center=(400, 200))
-text_howto2 = text_fontsmol.render('and keep away from the skeletons!', False, "white")
+text_howto2 = text_fontsmol2.render('and keep away from the skeletons and ghosts!', False, "white")
 text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
-text_howto3 = text_fontsmol.render('Also collect 5 hearts to active', False, "white")
+text_howto3 = text_fontsmol2.render('Also collect 5 hearts to active', False, "white")
 text_howto_rec3 = text_howto3.get_rect(center=(400, 380))
-text_howto4 = text_fontsmol.render('Super Moodeng Mode!', False, "white")
+text_howto4 = text_fontsmol2.render('Super Moodeng Mode!', False, "white")
 text_howto_rec4 = text_howto4.get_rect(center=(400, 430))
 
 obstacle_timer = pygame.USEREVENT + 5
@@ -257,11 +272,11 @@ while True:
             quit()
         if game_active:
             if event.type == obstacle_timer:
-                thing = choice(['fly','bone', 'bone', 'bone'])
-                if thing == 'bone':
-                    obstacle_group.add(Obstacle())
-                else:
+                thing = choice(['fly','bone', 'bone', 'ghost', 'ghost'])
+                if thing == 'fly':
                     heart_group.add(heart())
+                else:
+                    obstacle_group.add(Obstacle(thing))
 
     if game_active:
         screen.fill((0,0,0))
