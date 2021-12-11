@@ -18,8 +18,8 @@ class Player(pygame.sprite.Sprite):
         playerj = pygame.image.load("moodeng_go.png").convert_alpha()
         self.playerjj = pygame.transform.scale(playerj, (105, 105))
 
-        fire = pygame.image.load("IMG_2247.png").convert_alpha()
-        self.fire1 = pygame.transform.scale(fire, (105, 105))
+        fire = pygame.image.load("fireee.png").convert_alpha()
+        self.fire1 = pygame.transform.scale(fire, (200, 105))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(bottomleft=(posX, posY))
@@ -80,8 +80,8 @@ class Obstacle(pygame.sprite.Sprite):
         else:
             ghost1 = pygame.image.load("pp1.PNG").convert_alpha()
             ghost2 = pygame.image.load("pp2.PNG").convert_alpha()
-            ghost11 = pygame.transform.scale(ghost1, (80, 95))
-            ghost22 = pygame.transform.scale(ghost2, (80, 95))
+            ghost11 = pygame.transform.scale(ghost1, (75, 90))
+            ghost22 = pygame.transform.scale(ghost2, (75, 90))
             self.frame = [ghost11, ghost22]
 
         self.animation_index = 0
@@ -195,8 +195,8 @@ playerjj = pygame.transform.scale(playerj, (105, 105))
 player_surf = player_move[player_index]
 player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
-fire = pygame.image.load("IMG_2247.png").convert_alpha()
-fire1 = pygame.transform.scale(fire, (105, 105))
+fire = pygame.image.load("fireee.png").convert_alpha()
+fire1 = pygame.transform.scale(fire, (200, 105))
 
 obstacle_group = pygame.sprite.Group()
 heart_group = pygame.sprite.Group()
