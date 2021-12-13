@@ -28,6 +28,10 @@ class Player(pygame.sprite.Sprite):
         self.jump_sound = pygame.mixer.Sound('audio_jump.mp3')
         self.jump_sound.set_volume(3)
 
+    def restart(self):
+        if score == 0:
+            self.rect.bottomleft = (posX, posY)
+
     def player_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] and self.rect.bottom >= posY:
@@ -61,6 +65,7 @@ class Player(pygame.sprite.Sprite):
         self.player_input()
         self.apply_gravity()
         self.animation()
+        self.restart()
 
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, thing):
@@ -126,7 +131,7 @@ class heart(pygame.sprite.Sprite):
             self.kill()
 
 def display_score():
-    global move, supermoodeng
+    global move
     score_count = (pygame.time.get_ticks() //1000) - start_time
     score_sur = text_fontsmol.render(f'score : {score_count}', False, "white")
     score_rec = score_sur.get_rect(topright = (780, 30) )
@@ -138,9 +143,12 @@ def display_heart():
     heartshow = int(hearto // 1)
     heart_sur = text_fontsmol.render(f'= {heartshow}', False, "white")
     heart_rec = heart_sur.get_rect(topright = (400, 30))
-    if heartshow == 5: supermoodeng = True
-    if supermoodeng: hearto -= 0.003
-    if heartshow == 0: supermoodeng = False
+    if heartshow == 5:
+        supermoodeng = True
+    if supermoodeng:
+        hearto -= 0.003
+    if heartshow == 0: 
+        supermoodeng = False
     screen.blit(heart_sur, heart_rec)
 
 def collision_sprite():
@@ -217,7 +225,7 @@ bg_music.play(loops=-1)
 
 text_font = pygame.font.Font("byteoff.otf", 50)
 text_fontsmol = pygame.font.Font("byteoff.otf", 40)
-text_fontsmol2 = pygame.font.Font("byteoff.otf", 30) 
+text_fontsmol2 = pygame.font.Font("byteoff.otf", 38) 
 game_name = text_font.render("Moodeng The Dog", False, "white")
 game_name_rec = game_name.get_rect(center = (400, 90))
 text_start1 = text_fontsmol.render("Hold Tab to see How to Play", False, "white")
@@ -243,8 +251,10 @@ text_howto = text_font.render('How to play!', False, "white")
 text_howto_rec = text_howto.get_rect(center=(400, 90))
 text_howto1 = text_fontsmol2.render('Use arrow keys to control Moodeng', False, "white")
 text_howto_rec1 = text_howto1.get_rect(center=(400, 200))
-text_howto2 = text_fontsmol2.render('and keep away from the skeletons and ghosts!', False, "white")
+text_howto2 = text_fontsmol2.render('and keep away from the ghosts!', False, "white")
 text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
+text_howto22 = text_fontsmol2.render('and skeletons!', False, "white")
+text_howto_rec22 = text_howto22.get_rect(center=(400, 300))
 text_howto3 = text_fontsmol2.render('Also collect 5 hearts to active', False, "white")
 text_howto_rec3 = text_howto3.get_rect(center=(400, 380))
 text_howto4 = text_fontsmol2.render('Super Moodeng Mode!', False, "white")
@@ -317,6 +327,7 @@ while True:
             screen.blit(text_howto, text_howto_rec)
             screen.blit(text_howto1, text_howto_rec1)
             screen.blit(text_howto2, text_howto_rec2)
+            screen.blit(text_howto22, text_howto_rec22)
             screen.blit(text_howto3, text_howto_rec3)
             screen.blit(text_howto4, text_howto_rec4)
             
