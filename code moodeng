@@ -18,8 +18,8 @@ class Player(pygame.sprite.Sprite):
         playerj = pygame.image.load("moodeng_go.png").convert_alpha()
         self.playerjj = pygame.transform.scale(playerj, (105, 105))
 
-        fire = pygame.image.load("fireee.png").convert_alpha()
-        self.fire1 = pygame.transform.scale(fire, (200, 105))
+        fire = pygame.image.load("fire.png").convert_alpha()
+        self.fire1 = pygame.transform.scale(fire, (120, 120))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(bottomleft=(posX, posY))
@@ -61,11 +61,6 @@ class Player(pygame.sprite.Sprite):
         self.player_input()
         self.apply_gravity()
         self.animation()
-        self.destroy()
-
-    def destroy(self):
-        if game_active == False:
-            self.kill()
 
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, thing):
@@ -131,7 +126,7 @@ class heart(pygame.sprite.Sprite):
             self.kill()
 
 def display_score():
-    global move, supermoodeng, speed
+    global move, supermoodeng
     score_count = (pygame.time.get_ticks() //1000) - start_time
     score_sur = text_fontsmol.render(f'score : {score_count}', False, "white")
     score_rec = score_sur.get_rect(topright = (780, 30) )
@@ -144,12 +139,12 @@ def display_heart():
     heart_sur = text_fontsmol.render(f'= {heartshow}', False, "white")
     heart_rec = heart_sur.get_rect(topright = (400, 30))
     if heartshow == 5: supermoodeng = True
-    if supermoodeng: hearto -= 0.004
+    if supermoodeng: hearto -= 0.003
     if heartshow == 0: supermoodeng = False
     screen.blit(heart_sur, heart_rec)
 
 def collision_sprite():
-    global supermoodeng, posX, posY
+    global supermoodeng
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False) and supermoodeng == False:
         obstacle_group.empty()
         return False
@@ -195,8 +190,8 @@ playerjj = pygame.transform.scale(playerj, (105, 105))
 player_surf = player_move[player_index]
 player_rec = player_surf.get_rect(bottomleft=(posX, posY))
 
-fire = pygame.image.load("fireee.png").convert_alpha()
-fire1 = pygame.transform.scale(fire, (200, 105))
+fire = pygame.image.load("fire.png").convert_alpha()
+fire1 = pygame.transform.scale(fire, (120, 120))
 
 obstacle_group = pygame.sprite.Group()
 heart_group = pygame.sprite.Group()
@@ -258,11 +253,11 @@ text_howto_rec4 = text_howto4.get_rect(center=(400, 430))
 obstacle_timer = pygame.USEREVENT + 5
 pygame.time.set_timer(obstacle_timer, 2000)
 
-bone_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(bone_timer, 500)
+# bone_timer = pygame.USEREVENT + 2
+# pygame.time.set_timer(bone_timer, 500)
 
-fly_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(fly_timer, 700)
+# fly_timer = pygame.USEREVENT + 3
+# pygame.time.set_timer(fly_timer, 700)
 
 while True:
     if supermoodeng == False:
@@ -272,7 +267,7 @@ while True:
             quit()
         if game_active:
             if event.type == obstacle_timer:
-                thing = choice(['fly','bone', 'bone', 'ghost', 'ghost'])
+                thing = choice(['fly','bone', 'bone', 'ghost'])
                 if thing == 'fly':
                     heart_group.add(heart())
                 else:
@@ -287,7 +282,7 @@ while True:
         if rel_x < 800:
             screen.blit(bg1, (rel_x, 0))
 
-        if supermoodeng == False:
+        if supermoodeng == False and score < 100:
             move += 0.01
             speed += 0.01
 
@@ -299,14 +294,14 @@ while True:
         player_animation()
         player.draw(screen)
         player.update()
-        obstacle_group.draw(screen)
+        if supermoodeng == False:
+            obstacle_group.draw(screen)
         obstacle_group.update()
         heart_group.draw(screen)
         heart_group.update()
         game_active = collision_sprite()
 
     else:
-        speed = 0
         screen.blit(bg_gameover1, (0, 0))
         text_score = text_font.render(f'Score: {score}', False, "white")
         text_score_rec = text_score.get_rect(center=(400, 120))
@@ -334,6 +329,8 @@ while True:
         if keys[pygame.K_SPACE]:
             game_active = True
             move = 7
+            scroll = 0
+            speed = 0
             hearto = 0
             start_time = int(pygame.time.get_ticks()//1000)
 
