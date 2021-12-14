@@ -215,7 +215,6 @@ luv_rect = luv1.get_rect(topright = (330, 27))
 hearto = 0
 supermoodeng = False
 
-# obstacle_rec_list = []
 start_time = 0
 score = 0
 bg_music = pygame.mixer.Sound('Hw song.mp3')

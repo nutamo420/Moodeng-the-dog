@@ -99,8 +99,13 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect.x -= move
         self.destroy()
     def destroy(self):
+        global life
         if self.rect.x <= -100:
             self.kill()
+        if pygame.sprite.spritecollide(player.sprite, obstacle_group, False) and supermoodeng == False:
+            self.kill()
+            life -=1
+
 
 class heart(pygame.sprite.Sprite):
     def __init__(self):
@@ -143,19 +148,16 @@ def display_heart():
     global hearto, supermoodeng
     heartshow = int(hearto // 1)
     heart_sur = text_fontsmol.render(f'= {heartshow}', False, "Black")
-    heart_rec = heart_sur.get_rect(topright = (400, 30))
-    if heartshow == 5: supermoodeng = True
+    heart_rec = heart_sur.get_rect(topright = (450, 30))
+    if heartshow == 2: supermoodeng = True
     if supermoodeng: hearto -= 0.003
     if heartshow == 0: supermoodeng = False
     screen.blit(heart_sur, heart_rec)
 
-def collision_sprite():
-    global supermoodeng
-    if pygame.sprite.spritecollide(player.sprite, obstacle_group, False) and supermoodeng == False:
-        obstacle_group.empty()
-        return False
-    else:
-        return True
+def display_life():
+    life_text = text_fontsmol.render(f'Life = {life}', False, "Black")
+    life_rec = life_text.get_rect(topleft = (50, 30))
+    screen.blit(life_text, life_rec)
 
 def player_animation():
     global player_surf, player_index
@@ -182,6 +184,8 @@ bg1 = pygame.transform.scale(bg, (1600, 600))
 
 posX = 80
 posY = 490
+
+life = 3
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -210,16 +214,15 @@ text_font = pygame.font.Font("byteoff.otf", 40)
 
 luv = pygame.image.load("h1.PNG").convert_alpha()
 luv1 = pygame.transform.scale(luv, (45, 45))
-luv_rect = luv1.get_rect(topright = (330, 27))
+luv_rect = luv1.get_rect(topright = (380, 27))
 hearto = 0
 supermoodeng = False
 
-# obstacle_rec_list = []
 start_time = 0
 score = 0
-bg_music = pygame.mixer.Sound('cm somg.mp3')
-bg_music.set_volume(0.5)
-bg_music.play(loops=-1)
+# bg_music = pygame.mixer.Sound('cm somg.mp3')
+# bg_music.set_volume(0.5)
+# bg_music.play(loops=-1)
 
 text_font = pygame.font.Font("byteoff.otf", 50)
 text_fontsmol = pygame.font.Font("byteoff.otf", 40)
@@ -253,13 +256,13 @@ text_howto2 = text_fontsmol2.render('and keep away from the ghosts', False, "whi
 text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
 text_howto22 = text_fontsmol2.render('and skeletons!', False, "white")
 text_howto_rec22 = text_howto22.get_rect(center=(400, 300))
-text_howto3 = text_fontsmol2.render('Also collect 5 hearts to active', False, "white")
+text_howto3 = text_fontsmol2.render('Also collect 2 hearts to active', False, "white")
 text_howto_rec3 = text_howto3.get_rect(center=(400, 430))
 text_howto4 = text_fontsmol2.render('Super Moodeng Mode!', False, "white")
 text_howto_rec4 = text_howto4.get_rect(center=(400, 480))
 
 obstacle_timer = pygame.USEREVENT + 5
-pygame.time.set_timer(obstacle_timer, 2000)
+pygame.time.set_timer(obstacle_timer, 1500)
 
 while True:
     if supermoodeng == False:
@@ -269,7 +272,7 @@ while True:
             quit()
         if game_active:
             if event.type == obstacle_timer:
-                thing = choice(['fly','bone', 'bone', 'ghost'])
+                thing = choice(['fly', 'fly', 'bone', 'ghost','bone', 'ghost'])
                 if thing == 'fly':
                     heart_group.add(heart())
                 else:
@@ -287,21 +290,25 @@ while True:
         if supermoodeng == False and score < 100:
             move += 0.01
             speed += 0.01
+        
+        if life <= 0:
+            obstacle_group.empty()
+            game_active =  False
 
         score = display_score()
         display_heart()
+        display_life()
         screen.blit(luv1, luv_rect)
 
         scroll -= speed+1
         player_animation()
         player.draw(screen)
         player.update()
-        if supermoodeng == False:
-            obstacle_group.draw(screen)
+        # if supermoodeng == False:
+        obstacle_group.draw(screen)
         obstacle_group.update()
         heart_group.draw(screen)
         heart_group.update()
-        game_active = collision_sprite()
 
     else:
         screen.blit(bg_gameover1, (0, 0))
@@ -335,6 +342,7 @@ while True:
             scroll = 0
             speed = 0
             hearto = 0
+            life = 3
             start_time = int(pygame.time.get_ticks()//1000)
 
     pygame.display.update()
