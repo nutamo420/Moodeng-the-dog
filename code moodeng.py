@@ -87,7 +87,6 @@ class Obstacle(pygame.sprite.Sprite):
         self.animation_index = 0
         self.image = self.frame[self.animation_index]
         self.rect = self.image.get_rect(bottomright=(randint(900, 1100), 540))
-
     def animation_state(self):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frame):
@@ -251,14 +250,14 @@ text_howto = text_font.render('How to play!', False, "white")
 text_howto_rec = text_howto.get_rect(center=(400, 90))
 text_howto1 = text_fontsmol2.render('Use arrow keys to control Moodeng', False, "white")
 text_howto_rec1 = text_howto1.get_rect(center=(400, 200))
-text_howto2 = text_fontsmol2.render('and keep away from the ghosts!', False, "white")
+text_howto2 = text_fontsmol2.render('and keep away from the ghosts', False, "white")
 text_howto_rec2 = text_howto2.get_rect(center=(400, 250))
 text_howto22 = text_fontsmol2.render('and skeletons!', False, "white")
 text_howto_rec22 = text_howto22.get_rect(center=(400, 300))
 text_howto3 = text_fontsmol2.render('Also collect 5 hearts to active', False, "white")
-text_howto_rec3 = text_howto3.get_rect(center=(400, 380))
+text_howto_rec3 = text_howto3.get_rect(center=(400, 430))
 text_howto4 = text_fontsmol2.render('Super Moodeng Mode!', False, "white")
-text_howto_rec4 = text_howto4.get_rect(center=(400, 430))
+text_howto_rec4 = text_howto4.get_rect(center=(400, 480))
 
 obstacle_timer = pygame.USEREVENT + 5
 pygame.time.set_timer(obstacle_timer, 2000)
