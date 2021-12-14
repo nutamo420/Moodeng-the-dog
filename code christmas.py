@@ -89,6 +89,9 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = self.frame[self.animation_index]
         self.rect = self.image.get_rect(bottomright=(randint(900, 1100), 490))
 
+        self.hit_sound = pygame.mixer.Sound('small hit (2).wav')
+        self.hit_sound.set_volume(10)
+    
     def animation_state(self):
         self.animation_index += 0.1
         if self.animation_index >= len(self.frame):
@@ -105,6 +108,7 @@ class Obstacle(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player.sprite, obstacle_group, False) and supermoodeng == False:
             self.kill()
             life -=1
+            self.hit_sound.play()
 
 
 class heart(pygame.sprite.Sprite):
