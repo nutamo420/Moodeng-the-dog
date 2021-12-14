@@ -220,9 +220,9 @@ supermoodeng = False
 
 start_time = 0
 score = 0
-# bg_music = pygame.mixer.Sound('cm somg.mp3')
-# bg_music.set_volume(0.5)
-# bg_music.play(loops=-1)
+bg_music = pygame.mixer.Sound('cm somg.mp3')
+bg_music.set_volume(0.5)
+bg_music.play(loops=-1)
 
 text_font = pygame.font.Font("byteoff.otf", 50)
 text_fontsmol = pygame.font.Font("byteoff.otf", 40)
