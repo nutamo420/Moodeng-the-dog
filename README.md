@@ -1,2 +1,2 @@
 # Moodeng-the-dog
-My python project
+Python project to use PyGame to create a game.
